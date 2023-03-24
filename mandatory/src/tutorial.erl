@@ -24,6 +24,14 @@ hello() ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% @doc TODO: add description here
+%% === Example ===
+%% <div class="example">```
+%% > tutorial:hello(3).
+%% 3 Hello!
+%% 2 Hello!
+%% 1 Hello!
+%% 0 Hello!'''
+%% </div>
 -spec hello(N::integer()) -> ok.
 
 hello(0) ->
