@@ -33,7 +33,21 @@ loop(Fifo) ->
 	    loop(Fifo);
 	{empty, PID} ->
 	    PID ! fifo:empty(Fifo),
-	    loop(Fifo)
+	    loop(Fifo);
+  {pop, PID} ->
+    case fifo:empty(Fifo) of
+      true ->
+        PID ! { error , 'empty fifo'},
+        loop(Fifo);
+      false ->
+        {Value, NewFifo} = fifo:pop(Fifo),
+        PID ! {pop, Value},
+        loop(NewFifo)
+    end;
+  {push, Value, PID} ->
+    NewFifo = push(Fifo, Value),
+    PID ! {push, ok},
+    loop(NewFifo)
     end.
 
 
@@ -57,17 +71,22 @@ size(Fifo) ->
 empty(Fifo) ->
     Fifo ! {empty, self()},
     receive
-	true ->
-	    true;
-	false  ->
-	    false
+      true ->
+        true;
+      false ->
+        false
     end.
 
 %% @doc Pops a value from Fifo.
 -spec pop(Fifo) -> term() when Fifo::sfifo().
 
 pop(Fifo) ->
-    tbi.
+    Fifo ! {pop, self()},
+      receive
+        Value ->
+          Value
+      end.
+
 
 
 %% @doc Push a new value to Fifo.
@@ -75,7 +94,8 @@ pop(Fifo) ->
       Fifo::sfifo(),
       Value::term().
 push(Fifo, Value) ->
-    ok.
+    Fifo ! {push, Value, self()}.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

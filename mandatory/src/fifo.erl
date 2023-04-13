@@ -17,15 +17,17 @@
 
 new() -> {fifo, [], []}.
 
-%% @doc TODO Add a description
+%% @doc Returns the size of the FIFO buffer.
+%% @throws 'empty fifo'
+
 -spec size(Fifo) -> integer() when
       Fifo::fifo().
 
 size({fifo, In, Out}) ->
     length(In) + length(Out).
 
-%% @doc TODO Add a description
-%% TODO: add a -spec type declaration
+%% @doc Adds an element to the FIFO buffer.
+-spec push(Fifo, any()) -> fifo() when Fifo::fifo().
 
 %% To make it fast to push new values, add a new value to the head of
 %% In.
@@ -33,9 +35,9 @@ size({fifo, In, Out}) ->
 push({fifo, In, Out}, X) ->
     tbi.
 
-%% @doc TODO Add a description
+%% @doc Removes and returns the oldest element in the FIFO buffer.
 %% @throws 'empty fifo'
-%% TODO: add a -spec type declaration
+-spec pop(Fifo)-> {any(), fifo()} when Fifo::fifo().
 
 %% pop should return {Value, NewFifo}
 
@@ -45,17 +47,17 @@ pop({fifo, [], []}) ->
 %% To make pop fast we want to pop of the head of the Out list.
 
 pop({fifo, In, [H|T]}) ->
-    tbi;
+  {H, {fifo, In, T}};
 
 %% When Out is empty, we must take a performance penalty. Use the
 %% reverse of In as the new Out and an empty lists as the new In, then
 %% pop as usual.
 
 pop({fifo, In, []}) ->
-    tbi.
+  pop({fifo, [], lists:reverse(In)}).
 
 
-%% @doc TODO Add a description
+%% @doc Checks if the FIFO buffer is empty.
 -spec empty(Fifo) -> boolean() when Fifo::fifo().
 
 empty({fifo, [], []}) ->

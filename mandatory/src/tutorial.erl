@@ -74,7 +74,8 @@ fac_tr(N) ->
 fac_tr(0, Acc) ->
     Acc;
 fac_tr(N, Acc) ->
-    tbi.
+    fac_tr(N-1, N*Acc).
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,7 +98,7 @@ fac_tr(N, Acc) ->
 
 right_triangles(N) ->
     L = lists:seq(1, N),
-    tbi.
+    [ {A,B,C} || A <- L, B <- L, C <- L, A*A + B*B == C*C ]. % A^2 + B^2 = C^2
 
 %% @doc Returns a list of tuples, where each tuple describes a caracter in the Simposon family.
 %%
@@ -147,13 +148,13 @@ simpsons() ->
       Name::string().
 
 simpsons(names) ->
-    tbi;
+    [ Name || {_,_,Name} <- simpsons() ];
 simpsons(males) ->
-    tbi;
+    [ Name || {_,male,Name} <- simpsons() ];
 simpsons(females) ->
-    tbi;
+  [ Name || {_,female,Name} <- simpsons() ];
 simpsons(pets) ->
-    tbi.
+    [ Name || {Type,_,Name} <- simpsons(), Type == cat orelse Type == dog orelse Type == pig].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%  Guarded Functions  %%%%%%%%%%
@@ -169,8 +170,10 @@ simpsons(pets) ->
 %% </div>
 -spec char_to_upper(char()) -> char().
 
-char_to_upper(Char) when true->
-    tbi.
+char_to_upper(Char) when is_integer(Char), Char >= $a, Char =< $z ->
+  Char - 32;
+char_to_upper(Char) ->
+  Char.
 
 %% @doc Convert a character to lower case.
 %% === Example ===
@@ -182,8 +185,10 @@ char_to_upper(Char) when true->
 %% </div>
 -spec char_to_lower(char()) -> char().
 
-char_to_lower(Char) when true ->
-    tbi.
+char_to_lower(Char) when is_integer(Char), Char >= $A, Char =< $Z ->
+  Char + 32;
+char_to_lower(Char) ->
+  Char.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%  Map  %%%%%%%%%%
@@ -200,7 +205,7 @@ char_to_lower(Char) when true ->
 -spec str_to_upper(string()) -> string().
 
 str_to_upper(String) ->
-    tbi.
+  maps:map( fun char_to_upper/1, String).
 
 
 %% @doc Convert a string to lower case.
@@ -212,7 +217,7 @@ str_to_upper(String) ->
 -spec str_to_lower(string()) -> string().
 
 str_to_lower(String) ->
-    tbi.
+  maps:map(fun char_to_lower/1, String).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%  Fold %%%%%%%%%%
@@ -229,7 +234,7 @@ str_to_lower(String) ->
       M::integer().
 
 max([H | T]) ->
-    F = tbi,
+    F = fun (A, B) -> if A > B -> A; true -> B end end,
     lists:foldl(F, H, T).
 
 
@@ -246,7 +251,9 @@ max([H | T]) ->
 
 count(String, Char) ->
 
-    F = tbi,
+    F = fun (C, Acc) when C == Char -> Acc + 1;
+           (_, Acc) -> Acc
+        end,
 
     lists:foldl(F, 0, String).
 
@@ -266,7 +273,7 @@ count(String, Char) ->
 odd_and_even(List) ->
     F = fun(X, {{odd, Odd}, {even, Even}}) when X rem 2 == 0 ->
                 {{odd, Odd}, {even, [X | Even]}};
-           (X, {{odd, Odd}, {even, Even}})  -> tbi
+           (X, {{odd, Odd}, {even, Even}})  -> {{odd, [X | Odd]}, {even, Even}}
         end,
 
     lists:foldl(F, {{odd, []}, {even, []}}, List).
