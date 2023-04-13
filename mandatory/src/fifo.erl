@@ -4,6 +4,7 @@
 
 -module(fifo).
 -export([new/0, size/1, push/2, pop/1, empty/1]).
+-export_type([fifo/0]).
 
 %% To use EUnit we must include this:
 -include_lib("eunit/include/eunit.hrl").
@@ -33,7 +34,7 @@ size({fifo, In, Out}) ->
 %% In.
 
 push({fifo, In, Out}, X) ->
-    tbi.
+  {fifo, [X| In], Out}.
 
 %% @doc Removes and returns the oldest element in the FIFO buffer.
 %% @throws 'empty fifo'

@@ -8,7 +8,7 @@
 -module(sfifo).
 
 -export([new/0, size/1, push/2, pop/1, empty/1]).
-
+-export_type([sfifo/0]).
 %% To use EUnit we must include this:
 -include_lib("eunit/include/eunit.hrl").
 
